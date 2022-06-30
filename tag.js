@@ -1,6 +1,6 @@
 const shell = require("shelljs");
 const fs = require("fs");
-const [tagName, product] = process.argv.slice(2);
+const [product, tagName] = process.argv.slice(2);
 
 // datlas脚本修改
 const isDatlas = (product) => product === "datlas";
