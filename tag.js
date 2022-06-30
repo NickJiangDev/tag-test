@@ -5,18 +5,26 @@ const fs = require("fs");
 const DATLAS = "datlas";
 
 const datlas = () => {
-  if (fs.existsSync(`config/${env}/version`)) {
-    fs.writeFileSync(`config/${env}/version`, tagName, function (err) {
-      if (err) {
-        throw new Error(err);
-      }
-    });
-  } else {
-    consoleError(
-      "----------------------\nsrc/version not exist\n----------------------"
-    );
-    throw new Error();
-  }
+  const paths = [
+    `config/${env}/${product}/version`,
+    `config/${env}/page_sharing/version`,
+    `config/${env}/page_sharing_404/version`,
+    `config/${env}/personalized_login/version`,
+  ];
+  paths.forEach((path) => {
+    if (fs.existsSync(path)) {
+      fs.writeFileSync(path, tagName, function (err) {
+        if (err) {
+          throw new Error(err);
+        }
+      });
+    } else {
+      consoleError(
+        `----------------------\n${path} not exist\n----------------------`
+      );
+      throw new Error();
+    }
+  });
 };
 
 const handlerWithProducts = {
