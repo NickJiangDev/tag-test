@@ -14,7 +14,7 @@ const datlas = () => {
       }
     });
   } else {
-    console.error("src/version not exist");
+    throw new Error("src/version not exist");
   }
 };
 
@@ -23,15 +23,19 @@ const updateVersion = () => {
   shell.exec("git pull");
   shell.exec(`git co -b ${branchName}`);
 
-  // 执行文件修改
-  isDatlas(product) && datlas();
+  try {
+    // 执行文件修改
+    isDatlas(product) && datlas();
 
-  shell.exec("git add .");
-  shell.exec(`git commit -m${tagName}`);
-  shell.exec(`git tag ${tagName}`);
-  shell.exec(`git push origin ${tagName}`);
-  shell.exec("git co main");
-  shell.exec(`git branch -D ${branchName}`);
+    shell.exec("git add .");
+    shell.exec(`git commit -m${tagName}`);
+    shell.exec(`git tag ${tagName}`);
+    shell.exec(`git push origin ${tagName}`);
+    shell.exec("git co main");
+    shell.exec(`git branch -D ${branchName}`);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 updateVersion();
