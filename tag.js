@@ -5,8 +5,8 @@ const fs = require("fs");
 const DATLAS = "datlas";
 
 const datlas = () => {
-  if (fs.existsSync("src/version")) {
-    fs.writeFileSync("src/version", tagName, function (err) {
+  if (fs.existsSync(`config/${env}/version`)) {
+    fs.writeFileSync(`config/${env}/version`, tagName, function (err) {
       if (err) {
         throw new Error(err);
       }
@@ -23,7 +23,7 @@ const handlerWithProducts = {
   [DATLAS]: datlas,
 };
 
-const [product, tagName] = process.argv.slice(2);
+const [env, product, tagName] = process.argv.slice(2);
 const branchName = `${product}-${tagName}`;
 
 const updateVersion = () => {
@@ -32,6 +32,11 @@ const updateVersion = () => {
     //在控制台输出内容
     consoleError("Sorry, this script requires git");
     shell.exit(1);
+  }
+  if (!tagName) {
+    consoleError(
+      "----------------------\n缺少tag\n尝试执行例如：yarn tag_deploy-dev-datlas dev_all_20220202\n----------------------"
+    );
   }
   // script
   try {

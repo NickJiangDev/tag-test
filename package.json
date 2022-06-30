@@ -18,7 +18,8 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "tag-deploy:datlas": "node tag.js datlas",
+    "tag_deploy-dev-datlas": "node tag.js dev datlas",
+    "tag_deploy-staging-datlas": "node tag.js staging datlas",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
