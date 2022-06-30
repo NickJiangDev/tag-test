@@ -1,41 +1,73 @@
 const shell = require("shelljs");
 const fs = require("fs");
-const [product, tagName] = process.argv.slice(2);
-const branchName = `update-${tagName}`;
 
-// datlas脚本修改
-const isDatlas = (product) => product === "datlas";
+// 目前支持的产品
+const DATLAS = "datlas";
 
 const datlas = () => {
   if (fs.existsSync("src/version")) {
     fs.writeFileSync("src/version", tagName, function (err) {
       if (err) {
-        return console.error(err);
+        throw new Error(err);
       }
     });
   } else {
-    throw new Error("src/version not exist");
+    consoleError(
+      "----------------------\nsrc/version not exist\n----------------------"
+    );
+    throw new Error();
   }
 };
+
+const handlerWithProducts = {
+  [DATLAS]: datlas,
+};
+
+const [product, tagName] = process.argv.slice(2);
+const branchName = `${product}-${tagName}`;
 
 const updateVersion = () => {
-  shell.exec("git co main");
-  shell.exec("git pull");
-  shell.exec(`git co -b ${branchName}`);
-
+  // git command check
+  if (!shell.which("git")) {
+    //在控制台输出内容
+    consoleError("Sorry, this script requires git");
+    shell.exit(1);
+  }
+  // script
   try {
+    execExtand("git co main");
+    execExtand("git pull");
+    execExtand(`git co -b ${branchName}`);
     // 执行文件修改
-    isDatlas(product) && datlas();
+    handlerWithProducts[product]?.();
 
-    shell.exec("git add .");
-    shell.exec(`git commit -m${tagName}`);
-    shell.exec(`git tag ${tagName}`);
-    shell.exec(`git push origin ${tagName}`);
-    shell.exec("git co main");
-    shell.exec(`git branch -D ${branchName}`);
+    execExtand("git add .");
+    execExtand(`git commit -m${tagName}`);
+    execExtand(`git tag ${tagName}`);
+    execExtand(`git push origin ${tagName}`);
+    execExtand("git co main");
+    execExtand(`git branch -D ${branchName}`);
+
+    consoleSuccess(
+      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n----------------------`
+    );
   } catch (error) {
-    console.error(error);
+    consoleError(error);
   }
 };
+
+// -------↓↓↓ common ↓↓↓----------
+// 错误console
+const consoleError = (err) => console.log("\x1B[31m%s\x1B[0m", err);
+// 成功console
+const consoleSuccess = (success) => console.log("\x1B[36m%s\x1B[0m", success);
+
+// 统一抛出shell报错
+const execExtand = (echo) => {
+  if (shell.exec(echo).code !== 0) {
+    throw new Error();
+  }
+};
+// -------↑↑↑ common ↑↑↑----------
 
 updateVersion();
