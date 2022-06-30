@@ -1,6 +1,7 @@
 const shell = require("shelljs");
 const fs = require("fs");
 const [product, tagName] = process.argv.slice(2);
+const branchName = `update-${tagName}`;
 
 // datlas脚本修改
 const isDatlas = (product) => product === "datlas";
@@ -20,7 +21,7 @@ const datlas = () => {
 const updateVersion = () => {
   shell.exec("git co main");
   shell.exec("git pull");
-  shell.exec(`git co -b ${tagName}`);
+  shell.exec(`git co -b ${branchName}`);
 
   // 执行文件修改
   isDatlas(product) && datlas();
@@ -30,7 +31,7 @@ const updateVersion = () => {
   shell.exec(`git tag ${tagName}`);
   shell.exec(`git push origin ${tagName}`);
   shell.exec("git co main");
-  shell.exec(`git branch -D ${tagName}`);
+  shell.exec(`git branch -D ${branchName}`);
 };
 
 updateVersion();
