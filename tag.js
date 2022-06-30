@@ -7,7 +7,7 @@ const isDatlas = (product) => product === "datlas";
 
 const datlas = () => {
   if (fs.existsSync("src/version")) {
-    fs.writeFile("src/version", tagName, function (err) {
+    fs.writeFileSync("src/version", tagName, function (err) {
       if (err) {
         return console.error(err);
       }
