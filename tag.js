@@ -37,6 +37,7 @@ const updateVersion = () => {
     consoleError(
       "----------------------\n缺少tag\n尝试执行例如：yarn tag_deploy-dev-datlas dev_all_20220202\n----------------------"
     );
+    shell.exit(1);
   }
   // script
   try {
