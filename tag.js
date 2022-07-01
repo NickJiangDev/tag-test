@@ -26,9 +26,13 @@ const productsWithPaths = {
 
 // 运行前检查
 const checkRun = (fn) => {
+  /**  git command check */
   gitCheck();
-  tagNameCheck();
+  /**  tag 为空检查 */
+  tagNameEmptyCheck();
+  /**  产品支持 */
   productCheck();
+  /**  检查是否为主分支 */
   branchCheck();
 
   fn();
@@ -66,7 +70,7 @@ const init = () => {
 };
 
 // -------↓↓↓ private function ↓↓↓----------
-const tagNameCheck = () => {
+const tagNameEmptyCheck = () => {
   if (!tagName) {
     consoleError(
       "----------------------\n缺少tag\n尝试执行例如：yarn tag_deploy-dev-datlas dev_all_20220202\n----------------------"
@@ -85,7 +89,6 @@ const productCheck = () => {
 };
 
 const branchCheck = () => {
-  // 检查是否为主分支
   if (
     shell.exec("git rev-parse --abbrev-ref HEAD").stdout.indexOf("main") === -1
   ) {
@@ -96,9 +99,7 @@ const branchCheck = () => {
   }
 };
 const gitCheck = () => {
-  // git command check
   if (!shell.which("git")) {
-    //在控制台输出内容
     consoleError("Sorry, this script requires git");
     shell.exit(1);
   }
