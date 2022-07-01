@@ -2,20 +2,20 @@ const shell = require("shelljs");
 const fs = require("fs");
 const readline = require("readline");
 
-// 当前主分支名称
 const CURRENT_MAIN_BRANCH = "main";
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-const [env, product, tagName] = process.argv.slice(2);
+const [env, product, tagName, noVersion = "false"] = process.argv.slice(2);
 
+const _isNoVersion = noVersion === "true";
 const _isMainBranch =
   shell
     .exec("git rev-parse --abbrev-ref HEAD")
     .stdout.indexOf(CURRENT_MAIN_BRANCH) !== -1;
-const _branchName = `${product}-${tagName}-${new Date().getTime()}`;
+const _branchName = `${tagName}-${product}`;
 
 // 支持的产品以及对应路径
 const productsWithPaths = {
@@ -103,10 +103,10 @@ const gitCheck = () => {
 
 const tagPush = () => {
   try {
-    // execExtand("git pull");
+    // execExtand('git pull');
     _isMainBranch && execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
-    reWrite(productsWithPaths[product]);
+    _isNoVersion() && reWrite(productsWithPaths[product]);
 
     execExtand("git add .");
     execExtand(`git commit -m${tagName}`);
