@@ -8,9 +8,9 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-const [env, product, tagName, noVersion = "false"] = process.argv.slice(2);
+const [env, product, tagName, version = "true"] = process.argv.slice(2);
 
-const _isNoVersion = noVersion === "true";
+const _isversion = version === "true";
 const _isMainBranch =
   shell
     .exec("git rev-parse --abbrev-ref HEAD")
@@ -106,9 +106,9 @@ const tagPush = (clean = false) => {
     // execExtand('git pull');
     _isMainBranch && execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
-    !_isNoVersion && reWrite(productsWithPaths[product]);
+    _isversion && reWrite(productsWithPaths[product]);
 
-    if (!_isNoVersion && clean) {
+    if (_isversion && clean) {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
