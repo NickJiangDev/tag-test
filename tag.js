@@ -95,7 +95,7 @@ const tagNameCheck = () => {
 };
 
 const productCheck = () => {
-  if (!product || !Object.values(productsWithPaths).includes(product)) {
+  if (!product || !Object.keys(productsWithPaths).includes(product)) {
     consoleError(
       `----------------------\n不支持该产品！\n----------------------`
     );
