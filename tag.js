@@ -123,7 +123,7 @@ const tagPush = () => {
     );
   } catch (error) {
     consoleError(error);
-    shell.exec("git clean -xdf");
+    shell.exec("git checkout -- *");
     shell.exec("git co main");
   } finally {
     rl.close();
