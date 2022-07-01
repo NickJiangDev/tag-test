@@ -56,7 +56,7 @@ const switchMotifyConfig = () => {
         if (prompt?.toLowerCase() === "y") {
           consoleSuccess("确认提交, 脚本继续执行");
           rl.close();
-          tagPush();
+          tagPush(false);
         } else if (prompt?.toLowerCase() === "n") {
           consoleWarn("放弃提交，脚本结束");
           rl.close();
@@ -67,7 +67,7 @@ const switchMotifyConfig = () => {
       }
     );
   } else {
-    tagPush();
+    tagPush(true);
   }
 };
 
