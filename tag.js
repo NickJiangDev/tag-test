@@ -103,7 +103,7 @@ const gitCheck = () => {
 
 const tagPush = () => {
   try {
-    execExtand("git pull");
+    // execExtand("git pull");
     _isMainBranch && execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
     reWrite(productsWithPaths[product]);
