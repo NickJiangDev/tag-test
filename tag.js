@@ -9,7 +9,7 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-const { env, product, tagName, version = "true", branch } = argv;
+const { env, product, tag: tagName, version = "true", branch } = argv;
 const _isversion = version === "true";
 const _isMainBranch =
   shell
