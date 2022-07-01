@@ -101,14 +101,14 @@ const gitCheck = () => {
   }
 };
 
-const tagPush = (clean = false) => {
+const tagPush = (clean) => {
   try {
     // execExtand('git pull');
     _isMainBranch && execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
     _isversion && reWrite(productsWithPaths[product]);
 
-    if (_isversion && clean) {
+    if (!_isversion && clean) {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
