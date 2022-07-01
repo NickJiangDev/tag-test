@@ -127,7 +127,6 @@ const tagPush = () => {
     shell.exec("git co main");
   } finally {
     rl.close();
-    shell.exit(1);
   }
 };
 
