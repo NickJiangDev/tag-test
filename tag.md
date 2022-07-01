@@ -23,12 +23,34 @@
     tag_deploy-prod [product] [tag]
 ```
 
-### 规范检查
+### 规范检查(错误展示)
 1. git命令检查
+
+        yarn tag_deploy-dev datlas dev_all_20220202
+        Error: "Sorry, this script requires git"
+
 2. tag值为空检查
+
+        tag_deploy-dev datlas
+        Error: 
+        ----------------------
+        缺少tag
+        尝试执行例如：yarn tag_deploy-dev-datlas dev_all_20220202
+        ----------------------
+
 3. 产品支持检查
+
+        yarn tag_deploy-dev noExistProduct dev_all_20220202
+        Error: 
+        ----------------------
+        不支持该产品！
+        ----------------------
 4. 主分支检查（必须为main）
 
+        yarn tag_deploy-dev datlas dev_all_20220202
+        ----------------------
+        当前分支必须为main, 请检查
+        ----------------------
 ### 如何支持config的修改
 
 1. 当本次提交需要修改config，且仅是为了打tag的需要：
