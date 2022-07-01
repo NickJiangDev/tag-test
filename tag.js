@@ -15,7 +15,7 @@ const _isMainBranch =
   shell
     .exec("git rev-parse --abbrev-ref HEAD")
     .stdout.indexOf(CURRENT_MAIN_BRANCH) !== -1;
-const _branchName = `${product}-${branch ?? tagName}`;
+const _branchName = `${product}-${branch ? branch : tagName}`;
 
 // 支持的产品以及对应路径
 const productsWithPaths = {
