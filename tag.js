@@ -117,7 +117,7 @@ const tagPush = () => {
     execExtand(`git tag ${tagName}`);
     execExtand(`git push origin ${tagName}`);
     execExtand("git co main");
-    execExtand(`git branch -D ${_branchName}`);
+    execExtand(`git branch -D ${_branchName} -f`);
 
     consoleSuccess(
       `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n----------------------`
