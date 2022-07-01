@@ -101,13 +101,19 @@ const gitCheck = () => {
   }
 };
 
-const tagPush = () => {
+const tagPush = (clean = false) => {
   try {
     // execExtand('git pull');
     _isMainBranch && execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
-    _isNoVersion && reWrite(productsWithPaths[product]);
+    !_isNoVersion && reWrite(productsWithPaths[product]);
 
+    if (!_isNoVersion && clean) {
+      consoleSuccess(
+        `----------------------\n执行完成\n无需更新\n----------------------`
+      );
+      return;
+    }
     execExtand("git add .");
     execExtand(`git commit -m${tagName}`);
     execExtand(`git tag ${tagName}`);
