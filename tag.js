@@ -7,7 +7,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 const [env, product, tagName] = process.argv.slice(2);
-const _branchName = `${product}-${tagName}`;
+const _branchName = `${product}-${tagName}-${new Date().getTime()}`;
 
 // 支持的产品以及对应路径
 const productsWithPaths = {
@@ -40,7 +40,6 @@ const switchMotifyConfig = () => {
   if (shell.exec("git status").stdout.indexOf("working tree clean") === -1) {
     clearConsole();
     shell.exec("git status -s");
-
     rl.question(
       `如上所示, 本次改动将会合并到 ${product} 产品的tag(${tagName})中, 请检查提交文件询问是否继续（Y/N）\n`,
       function (prompt) {
