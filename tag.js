@@ -112,6 +112,10 @@ const tagPush = (clean) => {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
+      if (_isMainBranch) {
+        shell.exec(`git co ${CURRENT_MAIN_BRANCH}`);
+        shell.exec(`git branch -D ${_branchName} -f`);
+      }
       return;
     }
     execExtand("git add .");
