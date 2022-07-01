@@ -34,54 +34,36 @@ const checkRun = (fn) => {
   fn();
 };
 
-// 更新后远程提交tag
-const updateVersionTag = () => {
+// 手动判断是否要继续脚本 更新config
+const switchMotifyConfig = () => {
   // script
-  try {
-    if (shell.exec("git status").stdout.indexOf("working tree clean") === -1) {
-      clearConsole();
-      shell.exec("git status -s");
+  if (shell.exec("git status").stdout.indexOf("working tree clean") === -1) {
+    clearConsole();
+    shell.exec("git status -s");
 
-      rl.question(
-        `如上所示, 本次改动将会合并到 ${product} 产品的tag(${tagName})中, 请检查提交文件询问是否继续（Y/N）\n`,
-        function (prompt) {
-          if (prompt?.toLowerCase() === "y") {
-            consoleSuccess("确认提交, 脚本继续执行");
-            rl.close();
-            execExtand("git pull");
-            execExtand(`git co -b ${_branchName}`);
-            // 执行文件修改
-            reWrite(productsWithPaths[product])();
-
-            execExtand("git add .");
-            execExtand(`git commit -m${tagName}`);
-            execExtand(`git tag ${tagName}`);
-            execExtand(`git push origin ${tagName}`);
-            execExtand("git co main");
-            execExtand(`git branch -D ${_branchName}`);
-
-            consoleSuccess(
-              `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n----------------------`
-            );
-          } else if (prompt?.toLowerCase() === "n") {
-            consoleWarn("放弃提交，脚本结束");
-            rl.close();
-          } else {
-            consoleWarn("输入异常，请重新执行脚本");
-            rl.close();
-          }
+    rl.question(
+      `如上所示, 本次改动将会合并到 ${product} 产品的tag(${tagName})中, 请检查提交文件询问是否继续（Y/N）\n`,
+      function (prompt) {
+        if (prompt?.toLowerCase() === "y") {
+          consoleSuccess("确认提交, 脚本继续执行");
+          rl.close();
+          tagPush();
+        } else if (prompt?.toLowerCase() === "n") {
+          consoleWarn("放弃提交，脚本结束");
+          rl.close();
+        } else {
+          consoleWarn("输入异常，请重新执行脚本");
+          rl.close();
         }
-      );
-    }
-  } catch (error) {
-    consoleError(error);
-    shell.exec("git clean -xdf");
-    shell.exec("git co main");
+      }
+    );
+  } else {
+    tagPush();
   }
 };
 
 const init = () => {
-  checkRun(updateVersionTag);
+  checkRun(switchMotifyConfig);
 };
 
 // -------↓↓↓ private function ↓↓↓----------
@@ -120,6 +102,30 @@ const gitCheck = () => {
     //在控制台输出内容
     consoleError("Sorry, this script requires git");
     shell.exit(1);
+  }
+};
+
+const tagPush = () => {
+  try {
+    execExtand("git pull");
+    execExtand(`git co -b ${_branchName}`);
+    // 执行文件修改
+    reWrite(productsWithPaths[product])();
+
+    execExtand("git add .");
+    execExtand(`git commit -m${tagName}`);
+    execExtand(`git tag ${tagName}`);
+    execExtand(`git push origin ${tagName}`);
+    execExtand("git co main");
+    execExtand(`git branch -D ${_branchName}`);
+
+    consoleSuccess(
+      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n----------------------`
+    );
+  } catch (error) {
+    consoleError(error);
+    shell.exec("git clean -xdf");
+    shell.exec("git co main");
   }
 };
 
