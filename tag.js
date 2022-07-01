@@ -109,7 +109,7 @@ const tagPush = () => {
     execExtand("git pull");
     execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
-    reWrite(productsWithPaths[product])();
+    reWrite(productsWithPaths[product]);
 
     execExtand("git add .");
     execExtand(`git commit -m${tagName}`);
@@ -125,6 +125,7 @@ const tagPush = () => {
     consoleError(error);
     shell.exec("git clean -xdf");
     shell.exec("git co main");
+    shell.exit(1);
   }
 };
 
