@@ -1,6 +1,7 @@
 const shell = require("shelljs");
 const fs = require("fs");
 const readline = require("readline");
+const argv = require("yargs").argv;
 
 const CURRENT_MAIN_BRANCH = "main";
 
@@ -8,14 +9,13 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-const [env, product, tagName, version = "true"] = process.argv.slice(2);
-
+const { env, product, tagName, version = "true", branch } = argv;
 const _isversion = version === "true";
 const _isMainBranch =
   shell
     .exec("git rev-parse --abbrev-ref HEAD")
     .stdout.indexOf(CURRENT_MAIN_BRANCH) !== -1;
-const _branchName = `${tagName}-${product}`;
+const _branchName = `${product}-${branch ?? tagName}`;
 
 // 支持的产品以及对应路径
 const productsWithPaths = {
