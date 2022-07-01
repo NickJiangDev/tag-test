@@ -20,6 +20,7 @@
   "scripts": {
     "tag_deploy-dev-datlas": "node tag.js dev datlas",
     "tag_deploy-staging-datlas": "node tag.js staging datlas",
+    "tag_deploy-dev": "node tag.js dev",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
