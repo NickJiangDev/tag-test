@@ -106,7 +106,7 @@ const tagPush = () => {
     // execExtand('git pull');
     _isMainBranch && execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
-    _isNoVersion() && reWrite(productsWithPaths[product]);
+    _isNoVersion && reWrite(productsWithPaths[product]);
 
     execExtand("git add .");
     execExtand(`git commit -m${tagName}`);
