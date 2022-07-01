@@ -126,6 +126,7 @@ const tagPush = () => {
     consoleError(error);
     shell.exec("git checkout -- *");
     shell.exec("git co main");
+    shell.exec(`git branch -D ${_branchName} -f`);
   } finally {
     rl.close();
   }
