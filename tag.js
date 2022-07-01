@@ -125,6 +125,8 @@ const tagPush = () => {
     consoleError(error);
     shell.exec("git clean -xdf");
     shell.exec("git co main");
+  } finally {
+    rl.close();
     shell.exit(1);
   }
 };
