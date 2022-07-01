@@ -2,6 +2,7 @@ const shell = require("shelljs");
 const fs = require("fs");
 const readline = require("readline");
 
+// 当前主分支名称
 const CURRENT_MAIN_BRANCH = "main";
 
 const rl = readline.createInterface({
