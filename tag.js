@@ -75,6 +75,8 @@ const updateVersionTag = () => {
     }
   } catch (error) {
     consoleError(error);
+    shell.exec("git clean -xdf");
+    shell.exec("git co main");
   }
 };
 
