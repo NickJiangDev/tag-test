@@ -2,11 +2,18 @@ const shell = require("shelljs");
 const fs = require("fs");
 const readline = require("readline");
 
+const CURRENT_MAIN_BRANCH = "main";
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 const [env, product, tagName] = process.argv.slice(2);
+
+const _isMainBranch =
+  shell
+    .exec("git rev-parse --abbrev-ref HEAD")
+    .stdout.indexOf(CURRENT_MAIN_BRANCH) !== -1;
 const _branchName = `${product}-${tagName}-${new Date().getTime()}`;
 
 // 支持的产品以及对应路径
@@ -32,8 +39,6 @@ const checkRun = (fn) => {
   tagNameEmptyCheck();
   /**  产品支持 */
   productCheck();
-  /**  检查是否为主分支 */
-  branchCheck();
 
   fn();
 };
@@ -88,16 +93,6 @@ const productCheck = () => {
   }
 };
 
-const branchCheck = () => {
-  if (
-    shell.exec("git rev-parse --abbrev-ref HEAD").stdout.indexOf("main") === -1
-  ) {
-    consoleError(
-      "----------------------\n当前分支必须为main, 请检查\n----------------------"
-    );
-    shell.exit(1);
-  }
-};
 const gitCheck = () => {
   if (!shell.which("git")) {
     consoleError("Sorry, this script requires git");
@@ -108,7 +103,7 @@ const gitCheck = () => {
 const tagPush = () => {
   try {
     execExtand("git pull");
-    execExtand(`git co -b ${_branchName}`);
+    _isMainBranch && execExtand(`git co -b ${_branchName}`);
     // 执行文件修改
     reWrite(productsWithPaths[product]);
 
@@ -116,17 +111,21 @@ const tagPush = () => {
     execExtand(`git commit -m${tagName}`);
     execExtand(`git tag ${tagName}`);
     execExtand(`git push origin ${tagName}`);
-    execExtand("git co main");
-    execExtand(`git branch -D ${_branchName} -f`);
+    // execExtand('git co main');
+    // execExtand(`git branch -D ${_branchName} -f`);
 
     consoleSuccess(
-      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n----------------------`
+      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n本地分支名称：${
+        shell.exec("git rev-parse --abbrev-ref HEAD").stdout
+      }\n----------------------`
     );
   } catch (error) {
     consoleError(error);
     shell.exec("git checkout -- *");
-    shell.exec("git co main");
-    shell.exec(`git branch -D ${_branchName} -f`);
+    if (_isMainBranch) {
+      shell.exec(`git co ${CURRENT_MAIN_BRANCH}`);
+      shell.exec(`git branch -D ${_branchName} -f`);
+    }
   } finally {
     rl.close();
   }
@@ -135,11 +134,7 @@ const tagPush = () => {
 const reWrite = (paths) => {
   paths.forEach((path) => {
     if (fs.existsSync(path)) {
-      fs.writeFileSync(path, tagName, function (err) {
-        if (err) {
-          throw new Error(err);
-        }
-      });
+      fs.writeFileSync(path, tagName);
     } else {
       consoleError(
         `----------------------\n${path} not exist\n----------------------`
