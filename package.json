@@ -17,11 +17,13 @@
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {
+    "axios": "^0.27.2",
     "shelljs": "^0.8.5",
     "yargs": "^17.5.1"
   },
   "scripts": {
     "tag_deploy-dev": "node tag.js --env=dev",
+    "tag_build": "node build.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
