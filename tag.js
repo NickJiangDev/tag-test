@@ -128,7 +128,7 @@ const tagPush = (clean) => {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
-      execExtand(`git co ${CURRENT_MAIN_BRANCH}`);
+      execExtand(`git checkout ${CURRENT_MAIN_BRANCH}`);
       return;
     }
     execExtand("git add .");
@@ -143,11 +143,10 @@ const tagPush = (clean) => {
         execExtand(`git push origin ${currentBranch}`);
       }
     }
-    execExtand(`git co ${CURRENT_MAIN_BRANCH}`);
-    // execExtand(`git branch -D ${_branchName} -f`);
+    execExtand(`git checkout ${CURRENT_MAIN_BRANCH}`);
 
     consoleSuccess(
-      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n本地分支名称：${
+      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n分支名称：${
         shell.exec("git rev-parse --abbrev-ref HEAD").stdout
       }\n----------------------`
     );
