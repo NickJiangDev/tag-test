@@ -124,7 +124,7 @@ const tagPush = (clean) => {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
-      execExtand("git co main");
+      execExtand(`git co ${CURRENT_MAIN_BRANCH}`);
       return;
     }
     execExtand("git add .");
@@ -139,7 +139,7 @@ const tagPush = (clean) => {
         execExtand(`git push origin ${currentBranch}`);
       }
     }
-    execExtand("git co main");
+    execExtand(`git co ${CURRENT_MAIN_BRANCH}`);
     // execExtand(`git branch -D ${_branchName} -f`);
 
     consoleSuccess(
@@ -149,7 +149,7 @@ const tagPush = (clean) => {
     );
   } catch (error) {
     consoleError(error);
-    errorHandle(_isMainBranch);
+    errorHandle(error, _isMainBranch);
   } finally {
     rl.close();
   }
@@ -192,11 +192,12 @@ const execExtand = (echo) => {
 };
 
 // 错误处理
-const errorHandle = (isMain) => {
+const errorHandle = (error) => {
+  console.log(error);
   shell.exec("git checkout -- *");
   if (_isMainBranch) {
     shell.exec(`git checkout ${CURRENT_MAIN_BRANCH}`);
-    shell.exec(`git branch -D ${_branchName} -f`);
+    // shell.exec(`git branch -D ${_branchName} -f`);
   }
 };
 // -------↑↑↑ common ↑↑↑----------
