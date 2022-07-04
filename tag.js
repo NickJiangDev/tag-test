@@ -2,14 +2,25 @@ const shell = require("shelljs");
 const fs = require("fs");
 const readline = require("readline");
 const argv = require("yargs").argv;
-
-const CURRENT_MAIN_BRANCH = "main";
-
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-const { env, product, tag: tagName, version = "true", branch } = argv;
+
+// 主分支名称
+const CURRENT_MAIN_BRANCH = "main";
+
+const {
+  env, // 环境
+  product, // 产品名
+  tag: tagName, // tag名
+  version = "true", // 当前是否更新version
+  branch, // 自定义分支名
+} = argv;
+
+// 命中主动push分支的tag名称正则校验
+const pushReg = /^(prod|staging|dev)?_[^_]*_.*/;
+
 const _isversion = version === "true";
 const _isMainBranch =
   shell
@@ -101,10 +112,11 @@ const gitCheck = () => {
   }
 };
 
+// tag 提交
 const tagPush = (clean) => {
   try {
     // execExtand('git pull');
-    _isMainBranch && execExtand(`git co -b ${_branchName}`);
+    _isMainBranch && execExtand(`git checkout -b ${_branchName}`);
     // 执行文件修改
     _isversion && reWrite(productsWithPaths[product]);
 
@@ -112,16 +124,20 @@ const tagPush = (clean) => {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
-      if (_isMainBranch) {
-        shell.exec(`git co ${CURRENT_MAIN_BRANCH}`);
-        shell.exec(`git branch -D ${_branchName} -f`);
-      }
       return;
     }
     execExtand("git add .");
     execExtand(`git commit -m${tagName}`);
     execExtand(`git tag ${tagName}`);
     execExtand(`git push origin ${tagName}`);
+    if (pushReg.test(tagName)) {
+      if (_isMainBranch) {
+        execExtand(`git push origin ${_branchName}`);
+      } else {
+        const currentBranch = execExtand("git rev-parse --abbrev-ref HEAD");
+        execExtand(`git push origin ${currentBranch}`);
+      }
+    }
     // execExtand('git co main');
     // execExtand(`git branch -D ${_branchName} -f`);
 
@@ -132,16 +148,13 @@ const tagPush = (clean) => {
     );
   } catch (error) {
     consoleError(error);
-    shell.exec("git checkout -- *");
-    if (_isMainBranch) {
-      shell.exec(`git co ${CURRENT_MAIN_BRANCH}`);
-      shell.exec(`git branch -D ${_branchName} -f`);
-    }
+    errorHandle(_isMainBranch);
   } finally {
     rl.close();
   }
 };
 
+// 写文件
 const reWrite = (paths) => {
   paths.forEach((path) => {
     if (fs.existsSync(path)) {
@@ -174,6 +187,15 @@ const clearConsole = function () {
 const execExtand = (echo) => {
   if (shell.exec(echo).code !== 0) {
     throw new Error();
+  }
+};
+
+// 错误处理
+const errorHandle = (isMain) => {
+  shell.exec("git checkout -- *");
+  if (_isMainBranch) {
+    shell.exec(`git checkout ${CURRENT_MAIN_BRANCH}`);
+    shell.exec(`git branch -D ${_branchName} -f`);
   }
 };
 // -------↑↑↑ common ↑↑↑----------
