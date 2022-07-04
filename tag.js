@@ -124,6 +124,7 @@ const tagPush = (clean) => {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
+      execExtand("git co main");
       return;
     }
     execExtand("git add .");
@@ -138,7 +139,7 @@ const tagPush = (clean) => {
         execExtand(`git push origin ${currentBranch}`);
       }
     }
-    // execExtand('git co main');
+    execExtand("git co main");
     // execExtand(`git branch -D ${_branchName} -f`);
 
     consoleSuccess(
