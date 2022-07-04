@@ -112,6 +112,10 @@ const gitCheck = () => {
   }
 };
 
+const _isNewBranch = () => {
+  return shell.exec(`git rev-parse --verify ${_branchName}`).code !== 0;
+};
+
 // tag 提交
 const tagPush = (clean) => {
   try {
@@ -149,7 +153,7 @@ const tagPush = (clean) => {
     );
   } catch (error) {
     consoleError(error);
-    errorHandle(error, _isMainBranch);
+    errorHandle(error);
   } finally {
     rl.close();
   }
@@ -197,7 +201,7 @@ const errorHandle = (error) => {
   shell.exec("git checkout -- *");
   if (_isMainBranch) {
     shell.exec(`git checkout ${CURRENT_MAIN_BRANCH}`);
-    // shell.exec(`git branch -D ${_branchName} -f`);
+    _isNewBranch() && shell.exec(`git branch -D ${_branchName} -f`);
   }
 };
 // -------↑↑↑ common ↑↑↑----------
