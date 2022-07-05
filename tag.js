@@ -67,7 +67,7 @@ const checkRun = async (fn) => {
   /**  产品支持 */
   await logger(productCheck(), "产品检查");
 
-  await logger(fn(), "config 变更检查");
+  fn();
 };
 
 // 手动判断是否要继续脚本 更新config
