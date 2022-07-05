@@ -2,25 +2,10 @@ const shell = require("shelljs");
 const fs = require("fs");
 const readline = require("readline");
 const argv = require("yargs").argv;
-const createLogger = require("progress-estimator");
-const path = require("path");
-
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-let _logger = null;
-
-const logger = (task, message, estimate) => {
-  if (!_logger) {
-    _logger = createLogger({
-      storagePath: path.join(__dirname, ".progress-estimator"),
-    });
-  }
-  return _logger(task, message, {
-    estimate,
-  });
-};
 
 // 主分支名称
 const CURRENT_MAIN_BRANCH = "main";
@@ -59,30 +44,30 @@ const productsWithPaths = {
 };
 
 // 运行前检查
-const checkRun = async (fn) => {
+const checkRun = (fn) => {
   /**  git command check */
-  await logger(gitCheck(), "get check");
+  gitCheck();
   /**  tag 为空检查 */
-  await logger(tagNameEmptyCheck(), "tag check");
+  tagNameEmptyCheck();
   /**  产品支持 */
-  await logger(productCheck(), "产品检查");
+  productCheck();
 
   fn();
 };
 
 // 手动判断是否要继续脚本 更新config
-const switchMotifyConfig = async () => {
+const switchMotifyConfig = () => {
   // script
   if (shell.exec("git status").stdout.indexOf("working tree clean") === -1) {
     clearConsole();
     shell.exec("git status -s");
     rl.question(
       `如上所示, 本次改动将会合并到 ${product} 产品的tag(${tagName})中, 请检查提交文件询问是否继续（Y/N）\n`,
-      async (prompt) => {
+      function (prompt) {
         if (prompt?.toLowerCase() === "y") {
           consoleSuccess("确认提交, 脚本继续执行");
           rl.close();
-          await logger(tagPush(false), "tag推送");
+          tagPush(false);
         } else if (prompt?.toLowerCase() === "n") {
           consoleWarn("放弃提交，脚本结束");
           rl.close();
@@ -93,7 +78,7 @@ const switchMotifyConfig = async () => {
       }
     );
   } else {
-    await logger(tagPush(true), "tag推送");
+    tagPush(true);
   }
 };
 
@@ -143,7 +128,7 @@ const tagPush = (clean) => {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
       );
-      execExtand(`git checkout ${CURRENT_MAIN_BRANCH}`);
+      execExtand(`git co ${CURRENT_MAIN_BRANCH}`);
       return;
     }
     execExtand("git add .");
@@ -158,10 +143,11 @@ const tagPush = (clean) => {
         execExtand(`git push origin ${currentBranch}`);
       }
     }
-    execExtand(`git checkout ${CURRENT_MAIN_BRANCH}`);
+    execExtand(`git co ${CURRENT_MAIN_BRANCH}`);
+    // execExtand(`git branch -D ${_branchName} -f`);
 
     consoleSuccess(
-      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n分支名称：${
+      `----------------------\n更新成功！\n目标产品：${product}\ntag版本：${tagName}\n本地分支名称：${
         shell.exec("git rev-parse --abbrev-ref HEAD").stdout
       }\n----------------------`
     );
