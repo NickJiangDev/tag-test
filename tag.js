@@ -2,10 +2,25 @@ const shell = require("shelljs");
 const fs = require("fs");
 const readline = require("readline");
 const argv = require("yargs").argv;
+const createLogger = require("progress-estimator");
+const path = require("path");
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+let _logger = null;
+
+const logger = (task, message, estimate) => {
+  if (!_logger) {
+    _logger = createLogger({
+      storagePath: path.join(__dirname, ".progress-estimator"),
+    });
+  }
+  return _logger(task, message, {
+    estimate,
+  });
+};
 
 // 主分支名称
 const CURRENT_MAIN_BRANCH = "main";
@@ -44,30 +59,30 @@ const productsWithPaths = {
 };
 
 // 运行前检查
-const checkRun = (fn) => {
+const checkRun = async (fn) => {
   /**  git command check */
-  gitCheck();
+  await logger(gitCheck(), "get check");
   /**  tag 为空检查 */
-  tagNameEmptyCheck();
+  await logger(tagNameEmptyCheck(), "tag check");
   /**  产品支持 */
-  productCheck();
+  await logger(productCheck(), "产品检查");
 
-  fn();
+  await logger(fn(), "config 变更检查");
 };
 
 // 手动判断是否要继续脚本 更新config
-const switchMotifyConfig = () => {
+const switchMotifyConfig = async () => {
   // script
   if (shell.exec("git status").stdout.indexOf("working tree clean") === -1) {
     clearConsole();
     shell.exec("git status -s");
     rl.question(
       `如上所示, 本次改动将会合并到 ${product} 产品的tag(${tagName})中, 请检查提交文件询问是否继续（Y/N）\n`,
-      function (prompt) {
+      async (prompt) => {
         if (prompt?.toLowerCase() === "y") {
           consoleSuccess("确认提交, 脚本继续执行");
           rl.close();
-          tagPush(false);
+          await logger(tagPush(false), "tag推送");
         } else if (prompt?.toLowerCase() === "n") {
           consoleWarn("放弃提交，脚本结束");
           rl.close();
@@ -78,7 +93,7 @@ const switchMotifyConfig = () => {
       }
     );
   } else {
-    tagPush(true);
+    await logger(tagPush(true), "tag推送");
   }
 };
 
