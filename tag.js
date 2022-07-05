@@ -7,6 +7,8 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+// test
+
 // 主分支名称
 const CURRENT_MAIN_BRANCH = "main";
 
