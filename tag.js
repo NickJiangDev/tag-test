@@ -21,8 +21,10 @@ const {
 const pushReg = /^(prod|staging|dev)?_[^_]*_.*/;
 // tag校验
 const tagReg = /^(prod|staging|dev)[1-9]?_[^_]*_.*/;
+const vtagReg = /^v\d+\.\d+\.\d+/;
+const passTagReg = (str) => tagReg.test(str) || vtagReg.test(str);
 
-const _reVersion = tagReg.test(v);
+const _reVersion = passTagReg(v);
 const _isVersion = v === "true";
 const _isNoVersion = v === "false";
 const _needUpdateVersion = _isVersion || _reVersion;
@@ -106,7 +108,7 @@ const tagNameEmptyCheck = () => {
 };
 
 const tagOrVersionCheck = () => {
-  if (!tagReg.test(tagName)) {
+  if (!passTagReg(tagName)) {
     consoleError(
       "----------------------\n tag不符合规范 \n----------------------"
     );
