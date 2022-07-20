@@ -230,4 +230,4 @@ const errorHandle = (error) => {
 // -------↑↑↑ common ↑↑↑----------
 
 // 执行init
-init();
+// init();
