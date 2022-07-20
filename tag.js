@@ -6,7 +6,6 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-
 // 主分支名称
 const CURRENT_MAIN_BRANCH = "main";
 
@@ -14,7 +13,7 @@ const {
   env, // 环境
   product, // 产品名
   tag: tagName, // tag名
-  version = "true", // 当前是否更新version
+  v = "true", // 当前是否更新version || 自定义version的覆盖值
   branch, // 自定义分支名
 } = argv;
 
@@ -23,9 +22,8 @@ const pushReg = /^(prod|staging|dev)?_[^_]*_.*/;
 // tag校验
 const tagReg = /^(prod|staging|dev)[1-9]?_[^_]*_.*/;
 
-console.log(version);
-const _reVersion = tagReg.test(version);
-const _isversion = version === "true" || _reVersion;
+const _reVersion = tagReg.test(v);
+const _isversion = v === "true" || _reVersion;
 
 const _isMainBranch =
   shell
@@ -112,7 +110,6 @@ const tagOrVersionCheck = () => {
     );
     shell.exit(1);
   }
-  console.log(version, _reVersion);
   if (!_reVersion) {
     consoleError(
       "----------------------\n version不符合tag规范 \n----------------------"
@@ -186,7 +183,7 @@ const tagPush = (clean) => {
 const reWrite = (paths) => {
   paths.forEach((path) => {
     if (fs.existsSync(path)) {
-      fs.writeFileSync(path, _reVersion ? version : tagName);
+      fs.writeFileSync(path, _reVersion ? v : tagName);
     } else {
       consoleError(
         `----------------------\n${path} not exist\n----------------------`
@@ -230,4 +227,4 @@ const errorHandle = (error) => {
 // -------↑↑↑ common ↑↑↑----------
 
 // 执行init
-// init();
+init();
