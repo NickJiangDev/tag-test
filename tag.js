@@ -24,7 +24,7 @@ const pushReg = /^(prod|staging|dev)?_[^_]*_.*/;
 const tagReg = /^(prod|staging|dev)[1-9]?_[^_]*_.*/;
 
 const _reVersion = tagReg.test(version);
-const _isversion = version !== "false";
+const _isversion = version === "true" || _reVersion;
 
 const _isMainBranch =
   shell
@@ -107,13 +107,14 @@ const tagNameEmptyCheck = () => {
 const tagOrVersionCheck = () => {
   if (!tagReg.test(tagName)) {
     consoleError(
-      "----------------------\n tag不符合规范 -\n----------------------"
+      "----------------------\n tag不符合规范 \n----------------------"
     );
     shell.exit(1);
   }
+  console.log(version, _reVersion);
   if (!_reVersion) {
     consoleError(
-      "----------------------\n version不符合tag规范 -\n----------------------"
+      "----------------------\n version不符合tag规范 \n----------------------"
     );
     shell.exit(1);
   }
