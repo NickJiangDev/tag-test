@@ -24,6 +24,7 @@ const tagReg = /^(prod|staging|dev)[1-9]?_[^_]*_.*/;
 
 const _reVersion = tagReg.test(v);
 const _isVersion = v === "true";
+const _isNoVersion = v === "false";
 const _needUpdateVersion = _isVersion || _reVersion;
 
 const _isMainBranch =
@@ -111,7 +112,7 @@ const tagOrVersionCheck = () => {
     );
     shell.exit(1);
   }
-  if (!_isVersion && !_reVersion) {
+  if (!_isNoVersion && !_reVersion) {
     consoleError(
       "----------------------\n v不符合tag规范 \n----------------------"
     );
