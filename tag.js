@@ -129,7 +129,7 @@ const tagPush = (clean) => {
     _isMainBranch && execExtand(`git checkout -b ${_branchName}`);
     // 执行文件修改
     _isversion && reWrite(productsWithPaths[product]);
-
+    console.log(_isversion, _reVersion);
     if (!_isversion && clean) {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
