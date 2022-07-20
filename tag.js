@@ -55,6 +55,8 @@ const checkRun = (fn) => {
   gitCheck();
   /**  tag 为空检查 */
   tagNameEmptyCheck();
+  /**  tag 或者 version重写的校验 */
+  tagOrVersionCheck();
   /**  产品支持 */
   productCheck();
 
@@ -97,6 +99,21 @@ const tagNameEmptyCheck = () => {
   if (!tagName) {
     consoleError(
       "----------------------\n缺少tag\n尝试执行例如：yarn tag_deploy-dev --product=datlas --tag=dev_datlas_20220711 -\n----------------------"
+    );
+    shell.exit(1);
+  }
+};
+
+const tagOrVersionCheck = () => {
+  if (!tagReg.test(tagName)) {
+    consoleError(
+      "----------------------\n tag不符合规范 -\n----------------------"
+    );
+    shell.exit(1);
+  }
+  if (_reVersion && !tagReg.test(version)) {
+    consoleError(
+      "----------------------\n version不符合tag规范 -\n----------------------"
     );
     shell.exit(1);
   }
