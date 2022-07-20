@@ -7,8 +7,6 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-// test
-
 // 主分支名称
 const CURRENT_MAIN_BRANCH = "main";
 
@@ -22,8 +20,12 @@ const {
 
 // 命中主动push分支的tag名称正则校验
 const pushReg = /^(prod|staging|dev)?_[^_]*_.*/;
+// tag校验
+const tagReg = /^(prod|staging|dev)[1-9]?_[^_]*_.*/;
 
-const _isversion = version === "true";
+const _reVersion = tagReg.test(version);
+const _isversion = version === "true" || _reVersion;
+
 const _isMainBranch =
   shell
     .exec("git rev-parse --abbrev-ref HEAD")
@@ -43,6 +45,8 @@ const productsWithPaths = {
   microMdt: [`config/${env}/micro-mdt/version`],
   myData: [`config/${env}/my-data/version`],
   sso: [`config/${env}/sso/version`],
+  datlasAdmin: [`config/${env}/datlas-admin/version`],
+  mapEditor: [`config/${env}/map-editor/version`],
 };
 
 // 运行前检查
@@ -60,7 +64,7 @@ const checkRun = (fn) => {
 // 手动判断是否要继续脚本 更新config
 const switchMotifyConfig = () => {
   // script
-  if (shell.exec("git status").stdout.indexOf("working tree clean") === -1) {
+  if (shell.exec("git status -s").stdout) {
     clearConsole();
     shell.exec("git status -s");
     rl.question(
@@ -92,7 +96,7 @@ const init = () => {
 const tagNameEmptyCheck = () => {
   if (!tagName) {
     consoleError(
-      "----------------------\n缺少tag\n尝试执行例如：yarn tag_deploy-dev-datlas dev_all_20220202\n----------------------"
+      "----------------------\n缺少tag\n尝试执行例如：yarn tag_deploy-dev --product=datlas --tag=dev_datlas_20220711 -\n----------------------"
     );
     shell.exit(1);
   }
@@ -134,7 +138,7 @@ const tagPush = (clean) => {
       return;
     }
     execExtand("git add .");
-    execExtand(`git commit -m${tagName}`);
+    execExtand(`git commit -m ${tagName}`);
     execExtand(`git tag ${tagName}`);
     execExtand(`git push origin ${tagName}`);
     if (pushReg.test(tagName)) {
@@ -164,7 +168,7 @@ const tagPush = (clean) => {
 const reWrite = (paths) => {
   paths.forEach((path) => {
     if (fs.existsSync(path)) {
-      fs.writeFileSync(path, tagName);
+      fs.writeFileSync(path, _reVersion ? version : tagName);
     } else {
       consoleError(
         `----------------------\n${path} not exist\n----------------------`
