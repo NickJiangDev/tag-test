@@ -24,7 +24,7 @@ const pushReg = /^(prod|staging|dev)?_[^_]*_.*/;
 const tagReg = /^(prod|staging|dev)[1-9]?_[^_]*_.*/;
 
 const _reVersion = tagReg.test(version);
-const _isversion = version === "true" || _reVersion;
+const _isversion = version !== "false";
 
 const _isMainBranch =
   shell
@@ -111,7 +111,7 @@ const tagOrVersionCheck = () => {
     );
     shell.exit(1);
   }
-  if (_reVersion && !tagReg.test(version)) {
+  if (!_reVersion) {
     consoleError(
       "----------------------\n version不符合tag规范 -\n----------------------"
     );
@@ -146,7 +146,6 @@ const tagPush = (clean) => {
     _isMainBranch && execExtand(`git checkout -b ${_branchName}`);
     // 执行文件修改
     _isversion && reWrite(productsWithPaths[product]);
-    console.log(_isversion, _reVersion);
     if (!_isversion && clean) {
       consoleSuccess(
         `----------------------\n执行完成\n无需更新\n----------------------`
