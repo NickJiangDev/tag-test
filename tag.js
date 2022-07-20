@@ -110,9 +110,9 @@ const tagOrVersionCheck = () => {
     );
     shell.exit(1);
   }
-  if (!_reVersion) {
+  if (_isversion && !_reVersion) {
     consoleError(
-      "----------------------\n version不符合tag规范 \n----------------------"
+      "----------------------\n v不符合tag规范 \n----------------------"
     );
     shell.exit(1);
   }
