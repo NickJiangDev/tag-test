@@ -23,6 +23,7 @@ const pushReg = /^(prod|staging|dev)?_[^_]*_.*/;
 // tag校验
 const tagReg = /^(prod|staging|dev)[1-9]?_[^_]*_.*/;
 
+console.log(version);
 const _reVersion = tagReg.test(version);
 const _isversion = version === "true" || _reVersion;
 
